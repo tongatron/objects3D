@@ -21,6 +21,8 @@
 - [x] T017 Campo di margherite ad alta definizione con InstancedMesh in `src/objects/daisies.js` (revisione 2026-07-08)
 - [x] T018 Densità margherite variabile con rebuild in `src/objects/daisies.js` + slider in `src/ui.js` (revisione 2026-07-08)
 - [x] T019 Vento parametrico condiviso in `src/wind.js`: margherite su CPU, erba 3D istanziata con sway in vertex shader in `src/grass.js` (revisione 2026-07-08)
+- [x] T020 Campo di rose rosse a verticilli con densità e vento in `src/objects/roses.js` (revisione 2026-07-08)
+- [x] T021 Parametro altezza erba via uniform nel vertex shader in `src/grass.js` (revisione 2026-07-08)
 - [x] T006 [P] [US1] Orsetto peluche in `src/objects/teddy.js`
 - [x] T007 [US1] Selettore oggetto (show/hide) in `src/main.js`
 

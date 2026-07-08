@@ -8,6 +8,7 @@ import { CompoundEyeShader } from './compoundEye.js';
 import { createFloor } from './floors.js';
 import { createSunflowers } from './objects/sunflowers.js';
 import { createDaisies } from './objects/daisies.js';
+import { createRoses } from './objects/roses.js';
 import { createTeddy } from './objects/teddy.js';
 import { createNeon } from './lights/neon.js';
 import { createAmbient } from './lights/ambient.js';
@@ -56,9 +57,11 @@ function applyFloor(name) {
 
 // oggetti (uno visibile alla volta)
 const daisies = createDaisies();
+const roses = createRoses();
 const objects = {
   'Girasoli': createSunflowers(),
   'Campo di margherite': daisies.group,
+  'Campo di rose rosse': roses.group,
   'Orsetto peluche': createTeddy(),
 };
 for (const obj of Object.values(objects)) {
@@ -140,10 +143,10 @@ function updateInsectView(dt) {
 }
 
 // UI
-createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies });
+createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass });
 
 if (import.meta.env.DEV) {
-  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, grass };
+  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass };
 }
 
 // resize
@@ -164,6 +167,7 @@ renderer.setAnimationLoop(() => {
   insects.update(time, dt);
   wind.update(dt);
   daisies.update(wind);
+  roses.update(wind);
   if (state.vista === 'Occhi di insetto') {
     updateInsectView(dt);
   } else {

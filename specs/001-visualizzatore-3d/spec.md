@@ -10,6 +10,8 @@
 
 **Revisione 2026-07-08 (2)**: aggiunta la simulazione di insetti (falene) con fototassi: volano a spirale attorno alle luci artificiali accese, si scontrano con esse e cadono stordite per poi riprendere il volo. Parametri: attivi, numero, velocità, attrazione (FR-011).
 
+**Revisione 2026-07-08 (6)**: aggiunto il "Campo di rose rosse" (FR-015) con le stesse variabili delle margherite (densità 10–300, vento con piegatura ridotta da stelo legnoso); corolla a tre verticilli di petali concavi attorno al bocciolo, con sepali. Aggiunto il parametro altezza dell'erba (FR-016, moltiplicatore 0,2–3 nel vertex shader).
+
 **Revisione 2026-07-08 (5)**: densità delle margherite regolabile (10–300 piante, FR-013) e vento parametrico (intensità, velocità, direzione, FR-014) che ondeggia margherite (matrici istanziate su CPU) ed erba 3D (7000 fili istanziati con sway nel vertex shader, visibili solo sul pavimento erboso).
 
 **Revisione 2026-07-08 (4)**: aggiunto l'oggetto "Campo di margherite": ~90 piante procedurali ad alta definizione (petali sagomati con conca, centri bombati, foglie basali) rese con InstancedMesh per mantenere un solo draw call per parte.
@@ -81,6 +83,8 @@ L'utente attiva/disattiva e regola tre sorgenti: un neon bruciato che sfarfalla 
 - **FR-010**: L'interfaccia dei controlli DEVE essere in italiano.
 - **FR-011**: Il sistema DEVE simulare falene attratte dalle sole luci artificiali localizzate e accese (neon e lampadina, non l'ambientale): volo a spirale con jitter, collisione con la sorgente, stordimento con caduta e ripresa. Con tutte le luci spente le falene vagano. Parametri regolabili: attive, numero, velocità, attrazione.
 - **FR-013**: La densità del campo di margherite DEVE essere regolabile (10–300 piante) con ricostruzione del campo.
+- **FR-015**: Il sistema DEVE offrire un campo di rose rosse con le stesse variabili delle margherite (densità regolabile, mosso dal vento); la piegatura al vento è inferiore (stelo legnoso).
+- **FR-016**: L'altezza dell'erba 3D DEVE essere regolabile (moltiplicatore 0,2–3).
 - **FR-014**: Il sistema DEVE simulare il vento con parametri regolabili (intensità, velocità, direzione): le margherite si piegano attorno all'asse perpendicolare al vento con onde che attraversano il campo; l'erba 3D ondeggia in sincronia (stesso campo di vento, valutato nel vertex shader). L'erba 3D è presente solo sul pavimento "Terra erbosa".
 - **FR-012**: L'utente DEVE poter scegliere tra vista "Orbitale" e "Occhi di insetto"; la seconda segue una falena in prima persona (urti e stordimenti compresi), applica un effetto occhio composto e torna automaticamente all'orbitale se le falene sono disattivate o assenti. La falena seguita è nascosta per non occludere la visuale.
 

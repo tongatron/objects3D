@@ -1,11 +1,11 @@
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { FLOOR_PRESETS } from './floors.js';
 
-export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies }) {
+export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass }) {
   const gui = new GUI({ title: 'Controlli scena' });
 
   // --- scena ---
-  gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Orsetto peluche'])
+  gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Campo di rose rosse', 'Orsetto peluche'])
     .name('Oggetto')
     .onChange(setObject);
 
@@ -24,11 +24,20 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
   daisyFolder.add(daisies.params, 'densita', 10, 300, 5).name('Densità (piante)')
     .onFinishChange(() => daisies.rebuild());
 
+  // --- rose ---
+  const roseFolder = gui.addFolder('Rose rosse');
+  roseFolder.add(roses.params, 'densita', 10, 300, 5).name('Densità (piante)')
+    .onFinishChange(() => roses.rebuild());
+
   // --- vento ---
   const windFolder = gui.addFolder('Vento');
   windFolder.add(wind.params, 'intensita', 0, 2, 0.05).name('Intensità');
   windFolder.add(wind.params, 'velocita', 0.1, 3, 0.05).name('Velocità');
   windFolder.add(wind.params, 'direzione', 0, 360, 5).name('Direzione (°)');
+
+  // --- erba ---
+  const grassFolder = gui.addFolder('Erba');
+  grassFolder.add(grass.params, 'altezza', 0.2, 3, 0.05).name('Altezza').onChange(grass.apply);
 
   // --- neon bruciato ---
   const neonFolder = gui.addFolder('Neon bruciato');

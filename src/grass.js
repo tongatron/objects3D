@@ -32,6 +32,9 @@ function bladeGeometry() {
 }
 
 export function createGrass(scene, wind) {
+  const params = { altezza: 1.0 };
+  const uHeight = { value: params.altezza };
+
   const material = new THREE.MeshStandardMaterial({
     color: 0xffffff, // il colore vero è per-istanza
     roughness: 0.9,
@@ -40,17 +43,20 @@ export function createGrass(scene, wind) {
 
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, wind.uniforms);
+    shader.uniforms.uGrassHeight = uHeight;
     shader.vertexShader = shader.vertexShader
       .replace(
         '#include <common>',
         `#include <common>
         uniform float uWindTime;
         uniform float uWindStrength;
-        uniform vec2 uWindDir;`
+        uniform vec2 uWindDir;
+        uniform float uGrassHeight;`
       )
       .replace(
         '#include <project_vertex>',
-        `vec4 mvPosition = vec4(transformed, 1.0);
+        `transformed.y *= uGrassHeight;
+        vec4 mvPosition = vec4(transformed, 1.0);
         #ifdef USE_INSTANCING
           mvPosition = instanceMatrix * mvPosition;
         #endif
@@ -91,5 +97,9 @@ export function createGrass(scene, wind) {
     mesh.visible = v;
   }
 
-  return { mesh, setVisible };
+  function apply() {
+    uHeight.value = params.altezza;
+  }
+
+  return { mesh, params, setVisible, apply };
 }

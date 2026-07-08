@@ -5,7 +5,7 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
   const gui = new GUI({ title: 'Controlli scena' });
 
   // --- scena ---
-  gui.add(state, 'oggetto', ['Girasoli', 'Orsetto peluche'])
+  gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Orsetto peluche'])
     .name('Oggetto')
     .onChange(setObject);
 

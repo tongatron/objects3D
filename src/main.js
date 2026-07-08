@@ -7,6 +7,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { CompoundEyeShader } from './compoundEye.js';
 import { createFloor } from './floors.js';
 import { createSunflowers } from './objects/sunflowers.js';
+import { createDaisies } from './objects/daisies.js';
 import { createTeddy } from './objects/teddy.js';
 import { createNeon } from './lights/neon.js';
 import { createAmbient } from './lights/ambient.js';
@@ -43,6 +44,7 @@ const floor = createFloor(scene);
 // oggetti (uno visibile alla volta)
 const objects = {
   'Girasoli': createSunflowers(),
+  'Campo di margherite': createDaisies(),
   'Orsetto peluche': createTeddy(),
 };
 for (const obj of Object.values(objects)) {

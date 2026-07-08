@@ -10,6 +10,8 @@
 
 **Revisione 2026-07-08 (2)**: aggiunta la simulazione di insetti (falene) con fototassi: volano a spirale attorno alle luci artificiali accese, si scontrano con esse e cadono stordite per poi riprendere il volo. Parametri: attivi, numero, velocità, attrazione (FR-011).
 
+**Revisione 2026-07-08 (4)**: aggiunto l'oggetto "Campo di margherite": ~90 piante procedurali ad alta definizione (petali sagomati con conca, centri bombati, foglie basali) rese con InstancedMesh per mantenere un solo draw call per parte.
+
 **Revisione 2026-07-08 (3)**: aggiunta la vista soggettiva "Occhi di insetto" (FR-012): camera agganciata a una falena con FOV largo, inseguimento smorzato ed effetto occhio composto (mosaico esagonale, fisheye, vignettatura) in post-processing.
 
 **Input**: User description: "Pagina con vista interattiva di oggetti 3D (girasoli, Yaris ibrida ultimo modello, orsetto peluche) con variabili di sfondo/pavimento (terra erbosa, garage, parquet) e illuminazione (neon bruciato con interruzioni, luce ambientale, lampadina a incandescenza)."
@@ -66,7 +68,7 @@ L'utente attiva/disattiva e regola tre sorgenti: un neon bruciato che sfarfalla 
 ### Functional Requirements
 
 - **FR-001**: Il sistema DEVE mostrare una scena 3D con controlli orbit (rotazione, zoom, pan).
-- **FR-002**: L'utente DEVE poter selezionare uno tra due oggetti: girasoli, orsetto peluche (la Yaris ibrida è stata rimossa nella revisione 2026-07-08).
+- **FR-002**: L'utente DEVE poter selezionare uno tra gli oggetti: girasoli, campo di margherite, orsetto peluche (la Yaris ibrida è stata rimossa nella revisione 2026-07-08).
 - **FR-003**: I modelli DEVONO essere generati proceduralmente in codice (nessun asset esterno da scaricare).
 - **FR-004**: L'utente DEVE poter selezionare uno tra tre pavimenti: terra erbosa, garage, parquet; le texture sono generate proceduralmente.
 - **FR-005**: Il sistema DEVE fornire una luce neon "bruciata" con sfarfallio e interruzioni casuali, con parametri regolabili: intensità, lunghezza e larghezza del tubo, frequenza e durata delle interruzioni.

@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createFloor } from './floors.js';
 import { createSunflowers } from './objects/sunflowers.js';
-import { createYaris } from './objects/yaris.js';
 import { createTeddy } from './objects/teddy.js';
 import { createNeon } from './lights/neon.js';
 import { createAmbient } from './lights/ambient.js';
@@ -38,7 +37,6 @@ const floor = createFloor(scene);
 // oggetti (uno visibile alla volta)
 const objects = {
   'Girasoli': createSunflowers(),
-  'Yaris ibrida': createYaris(),
   'Orsetto peluche': createTeddy(),
 };
 for (const obj of Object.values(objects)) {

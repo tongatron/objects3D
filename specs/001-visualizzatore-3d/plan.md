@@ -32,7 +32,6 @@ objects3D/
     │   └── bulb.js        # lampadina a incandescenza
     └── objects/
         ├── sunflowers.js  # cespo di girasoli
-        ├── yaris.js       # Yaris ibrida stilizzata
         └── teddy.js       # orsetto peluche
 ```
 

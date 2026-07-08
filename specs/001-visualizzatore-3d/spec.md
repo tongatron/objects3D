@@ -6,13 +6,15 @@
 
 **Status**: Approved
 
+**Revisione 2026-07-08**: rimossa la Yaris ibrida dagli oggetti su richiesta dell'utente; aumentata la definizione geometrica di girasoli e orsetto.
+
 **Input**: User description: "Pagina con vista interattiva di oggetti 3D (girasoli, Yaris ibrida ultimo modello, orsetto peluche) con variabili di sfondo/pavimento (terra erbosa, garage, parquet) e illuminazione (neon bruciato con interruzioni, luce ambientale, lampadina a incandescenza)."
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Visualizzare un oggetto 3D e ruotarlo (Priority: P1)
 
-L'utente apre la pagina, vede un oggetto 3D al centro della scena e può ruotare/zoomare la vista con il mouse. Può scegliere quale oggetto visualizzare tra girasoli, Yaris ibrida e orsetto peluche.
+L'utente apre la pagina, vede un oggetto 3D al centro della scena e può ruotare/zoomare la vista con il mouse. Può scegliere quale oggetto visualizzare tra girasoli e orsetto peluche.
 
 **Why this priority**: è il nucleo del prodotto: senza vista interattiva e selezione oggetto non c'è valore.
 
@@ -21,7 +23,7 @@ L'utente apre la pagina, vede un oggetto 3D al centro della scena e può ruotare
 **Acceptance Scenarios**:
 
 1. **Given** la pagina caricata, **When** l'utente trascina con il mouse, **Then** la camera orbita attorno all'oggetto.
-2. **Given** la pagina caricata, **When** l'utente seleziona "Yaris ibrida" dal pannello, **Then** l'oggetto corrente viene sostituito dal modello dell'auto.
+2. **Given** la pagina caricata, **When** l'utente seleziona "Orsetto peluche" dal pannello, **Then** l'oggetto corrente viene sostituito dal modello dell'orsetto.
 
 ### User Story 2 - Cambiare pavimento/ambiente (Priority: P2)
 
@@ -60,7 +62,7 @@ L'utente attiva/disattiva e regola tre sorgenti: un neon bruciato che sfarfalla 
 ### Functional Requirements
 
 - **FR-001**: Il sistema DEVE mostrare una scena 3D con controlli orbit (rotazione, zoom, pan).
-- **FR-002**: L'utente DEVE poter selezionare uno tra tre oggetti: girasoli, Yaris ibrida stilizzata, orsetto peluche.
+- **FR-002**: L'utente DEVE poter selezionare uno tra due oggetti: girasoli, orsetto peluche (la Yaris ibrida è stata rimossa nella revisione 2026-07-08).
 - **FR-003**: I modelli DEVONO essere generati proceduralmente in codice (nessun asset esterno da scaricare).
 - **FR-004**: L'utente DEVE poter selezionare uno tra tre pavimenti: terra erbosa, garage, parquet; le texture sono generate proceduralmente.
 - **FR-005**: Il sistema DEVE fornire una luce neon "bruciata" con sfarfallio e interruzioni casuali, con parametri regolabili: intensità, lunghezza e larghezza del tubo, frequenza e durata delle interruzioni.
@@ -87,6 +89,6 @@ L'utente attiva/disattiva e regola tre sorgenti: un neon bruciato che sfarfalla 
 ## Assumptions
 
 - Target: browser desktop moderni con WebGL2; mobile fuori scope per v1.
-- Estetica stilizzata/low-poly accettata (confermata dall'utente): la Yaris è una rappresentazione riconoscibile, non fotorealistica.
+- Estetica stilizzata accettata (confermata dall'utente), con geometrie ad alta densità per superfici lisce.
 - Stack confermato dall'utente: Vite + three.js, modelli procedurali.
 - Nessuna persistenza delle impostazioni richiesta.

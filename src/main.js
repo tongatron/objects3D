@@ -5,7 +5,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { CompoundEyeShader } from './compoundEye.js';
-import { createFloor } from './floors.js';
+import { createFloor, FLOOR_PRESETS } from './floors.js';
 import { createSunflowers } from './objects/sunflowers.js';
 import { createDaisies } from './objects/daisies.js';
 import { createRoses } from './objects/roses.js';
@@ -16,6 +16,7 @@ import { createBulb } from './lights/bulb.js';
 import { createInsects } from './insects.js';
 import { createWind } from './wind.js';
 import { createMonster } from './monster.js';
+import { createShare } from './share.js';
 import { createGrass } from './grass.js';
 import { createUI } from './ui.js';
 
@@ -146,11 +147,45 @@ function updateInsectView(dt) {
   if (pov.stunned) camera.rotation.z += Math.sin(performance.now() * 0.02) * 0.15;
 }
 
+// condivisione impostazioni via URL: binding chiave → get/set (+ ri-applicazione)
+const bindings = [
+  { key: 'oggetto', get: () => state.oggetto, set: (v) => { if (objects[v]) { state.oggetto = v; setObject(v); } } },
+  { key: 'pavimento', get: () => state.pavimento, set: (v) => { if (FLOOR_PRESETS[v]) { state.pavimento = v; applyFloor(v); } } },
+  { key: 'vista', get: () => state.vista, set: (v) => { if (v === 'Orbitale' || v === 'Occhi di insetto') { state.vista = v; setVista(v); } } },
+  { key: 'neon', get: () => neon.params.acceso, set: (v) => { neon.params.acceso = v; } },
+  { key: 'neonInt', get: () => neon.params.intensita, set: (v) => { neon.params.intensita = v; } },
+  { key: 'neonLun', get: () => neon.params.lunghezza, set: (v) => { neon.params.lunghezza = v; neon.rebuildTube(); } },
+  { key: 'neonDia', get: () => neon.params.diametro, set: (v) => { neon.params.diametro = v; neon.rebuildTube(); } },
+  { key: 'neonFreq', get: () => neon.params.frequenzaInterruzioni, set: (v) => { neon.params.frequenzaInterruzioni = v; } },
+  { key: 'neonDur', get: () => neon.params.durataInterruzioni, set: (v) => { neon.params.durataInterruzioni = v; } },
+  { key: 'amb', get: () => ambient.params.accesa, set: (v) => { ambient.params.accesa = v; ambient.apply(); } },
+  { key: 'ambInt', get: () => ambient.params.intensita, set: (v) => { ambient.params.intensita = v; ambient.apply(); } },
+  { key: 'ambCol', get: () => ambient.params.colore, set: (v) => { if (/^#[0-9a-f]{6}$/i.test(v)) { ambient.params.colore = v; ambient.apply(); } } },
+  { key: 'lamp', get: () => bulb.params.accesa, set: (v) => { bulb.params.accesa = v; bulb.apply(); } },
+  { key: 'lampInt', get: () => bulb.params.intensita, set: (v) => { bulb.params.intensita = v; bulb.apply(); } },
+  { key: 'lampAlt', get: () => bulb.params.altezza, set: (v) => { bulb.params.altezza = v; bulb.apply(); } },
+  { key: 'margherite', get: () => daisies.params.densita, set: (v) => { daisies.params.densita = v; daisies.rebuild(); } },
+  { key: 'rose', get: () => roses.params.densita, set: (v) => { roses.params.densita = v; roses.rebuild(); } },
+  { key: 'ventoInt', get: () => wind.params.intensita, set: (v) => { wind.params.intensita = v; } },
+  { key: 'ventoVel', get: () => wind.params.velocita, set: (v) => { wind.params.velocita = v; } },
+  { key: 'ventoDir', get: () => wind.params.direzione, set: (v) => { wind.params.direzione = v; } },
+  { key: 'erbaAlt', get: () => grass.params.altezza, set: (v) => { grass.params.altezza = v; grass.apply(); } },
+  { key: 'falene', get: () => insects.params.attivi, set: (v) => { insects.params.attivi = v; } },
+  { key: 'faleneNum', get: () => insects.params.numero, set: (v) => { insects.params.numero = Math.round(v); insects.setCount(insects.params.numero); } },
+  { key: 'faleneVel', get: () => insects.params.velocita, set: (v) => { insects.params.velocita = v; } },
+  { key: 'faleneAttr', get: () => insects.params.attrazione, set: (v) => { insects.params.attrazione = v; } },
+  { key: 'mostro', get: () => monster.params.attivo, set: (v) => { monster.params.attivo = v; } },
+  { key: 'mostroVel', get: () => monster.params.velocita, set: (v) => { monster.params.velocita = v; } },
+  { key: 'mostroDir', get: () => monster.params.cambiDirezione, set: (v) => { monster.params.cambiDirezione = v; } },
+];
+const share = createShare(bindings);
+share.applyFromURL(); // prima della GUI, che così nasce già allineata
+
 // UI
-createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monster });
+createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monster, share });
 
 if (import.meta.env.DEV) {
-  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monster };
+  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monster, share, state };
 }
 
 // resize

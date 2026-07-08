@@ -1,8 +1,17 @@
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { FLOOR_PRESETS } from './floors.js';
 
-export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monster }) {
+export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monster, share }) {
   const gui = new GUI({ title: 'Controlli scena' });
+
+  // --- condivisione ---
+  const shareBtn = gui.add({
+    async copia() {
+      const ok = await share.copyLink();
+      shareBtn.name(ok ? 'Link copiato ✓' : 'Copia fallita — URL aggiornato');
+      setTimeout(() => shareBtn.name('Copia link impostazioni'), 2000);
+    },
+  }, 'copia').name('Copia link impostazioni');
 
   // --- scena ---
   gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Campo di rose rosse', 'Orsetto peluche'])

@@ -1,7 +1,8 @@
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { FLOOR_PRESETS } from './floors.js';
+import { MONSTER_STYLES } from './monster.js';
 
-export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monster, share }) {
+export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, bamboo, panda, share }) {
   const gui = new GUI({ title: 'Impostazioni' });
 
   // --- condivisione ---
@@ -14,7 +15,7 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
   }, 'copia').name('Copia link impostazioni');
 
   // --- scena ---
-  gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Campo di rose rosse', 'Orsetto peluche'])
+  gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Campo di rose rosse', 'Foresta di bambù', 'Orsetto peluche'])
     .name('Oggetto')
     .onChange(setObject);
 
@@ -37,6 +38,13 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
   const roseFolder = gui.addFolder('Rose rosse');
   roseFolder.add(roses.params, 'densita', 10, 300, 5).name('Densità (piante)')
     .onFinishChange(() => roses.rebuild());
+
+  // --- bambù e panda ---
+  const bambooFolder = gui.addFolder('Bambù e panda');
+  bambooFolder.add(bamboo.params, 'densita', 10, 150, 5).name('Canne di bambù')
+    .onFinishChange(() => bamboo.rebuild());
+  bambooFolder.add(panda.params, 'attivo').name('Panda');
+  bambooFolder.add(panda.params, 'velocita', 0.2, 2, 0.05).name('Velocità panda');
 
   // --- vento ---
   const windFolder = gui.addFolder('Vento');
@@ -71,11 +79,27 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
   bulbFolder.add(bulb.params, 'intensita', 0, 100, 1).name('Intensità').onChange(bulb.apply);
   bulbFolder.add(bulb.params, 'altezza', 1.0, 5, 0.1).name('Altezza (m)').onChange(bulb.apply);
 
-  // --- mostriciattolo ---
-  const monsterFolder = gui.addFolder('Mostriciattolo');
-  monsterFolder.add(monster.params, 'attivo').name('Attivo');
-  monsterFolder.add(monster.params, 'velocita', 0.2, 4, 0.05).name('Velocità');
-  monsterFolder.add(monster.params, 'cambiDirezione', 0, 3, 0.05).name('Cambi di direzione');
+  // --- mostriciattoli ---
+  const monsterFolder = gui.addFolder('Mostriciattoli');
+  monsterFolder.add(monsters.params, 'attivo').name('Attivi');
+  monsterFolder.add(monsters.params, 'velocita', 0.2, 4, 0.05).name('Velocità');
+  monsterFolder.add(monsters.params, 'cambiDirezione', 0, 3, 0.05).name('Cambi di direzione');
+  // aggiunta di nuovi mostriciattoli con colore e fattura del pelo a scelta
+  const nuovo = { colore: '#3aa0ff', stile: 'Ispido' };
+  monsterFolder.addColor(nuovo, 'colore').name('Colore nuovo');
+  monsterFolder.add(nuovo, 'stile', Object.keys(MONSTER_STYLES)).name('Pelo nuovo');
+  const addCtrl = monsterFolder.add({
+    aggiungi() {
+      const m = monsters.add(nuovo.colore, nuovo.stile);
+      addCtrl.name(m ? `Aggiungi (${monsters.list.length} in campo)` : 'Massimo raggiunto');
+    },
+  }, 'aggiungi').name('Aggiungi mostriciattolo');
+  monsterFolder.add({
+    rimuovi() {
+      monsters.removeLast();
+      addCtrl.name(`Aggiungi (${monsters.list.length} in campo)`);
+    },
+  }, 'rimuovi').name('Rimuovi ultimo');
 
   // --- insetti ---
   const insectFolder = gui.addFolder('Insetti (falene)');

@@ -10,12 +10,14 @@ import { createSunflowers } from './objects/sunflowers.js';
 import { createDaisies } from './objects/daisies.js';
 import { createRoses } from './objects/roses.js';
 import { createTeddy } from './objects/teddy.js';
+import { createBamboo } from './objects/bamboo.js';
+import { createPanda } from './panda.js';
 import { createNeon } from './lights/neon.js';
 import { createAmbient } from './lights/ambient.js';
 import { createBulb } from './lights/bulb.js';
 import { createInsects } from './insects.js';
 import { createWind } from './wind.js';
-import { createMonster } from './monster.js';
+import { createMonsters } from './monster.js';
 import { createShare } from './share.js';
 import { createGrass } from './grass.js';
 import { createUI } from './ui.js';
@@ -60,10 +62,14 @@ function applyFloor(name) {
 // oggetti (uno visibile alla volta)
 const daisies = createDaisies();
 const roses = createRoses();
+const bamboo = createBamboo();
+const panda = createPanda(bamboo);
+bamboo.group.add(panda.group); // il panda vive nella foresta di bambù
 const objects = {
   'Girasoli': createSunflowers(),
   'Campo di margherite': daisies.group,
   'Campo di rose rosse': roses.group,
+  'Foresta di bambù': bamboo.group,
   'Orsetto peluche': createTeddy(),
 };
 for (const obj of Object.values(objects)) {
@@ -86,8 +92,8 @@ const bulb = createBulb(scene);
 const insects = createInsects(scene);
 insects.bindLights({ neon, bulb });
 
-// mostriciattolo che corre nel campo (opzionale)
-const monster = createMonster(scene);
+// mostriciattoli che corrono nel campo (opzionali, anche più d'uno)
+const monsters = createMonsters(scene);
 
 // post-processing: mosaico "occhio composto" attivo solo in vista insetto
 const composer = new EffectComposer(renderer);
@@ -174,18 +180,22 @@ const bindings = [
   { key: 'faleneNum', get: () => insects.params.numero, set: (v) => { insects.params.numero = Math.round(v); insects.setCount(insects.params.numero); } },
   { key: 'faleneVel', get: () => insects.params.velocita, set: (v) => { insects.params.velocita = v; } },
   { key: 'faleneAttr', get: () => insects.params.attrazione, set: (v) => { insects.params.attrazione = v; } },
-  { key: 'mostro', get: () => monster.params.attivo, set: (v) => { monster.params.attivo = v; } },
-  { key: 'mostroVel', get: () => monster.params.velocita, set: (v) => { monster.params.velocita = v; } },
-  { key: 'mostroDir', get: () => monster.params.cambiDirezione, set: (v) => { monster.params.cambiDirezione = v; } },
+  { key: 'mostro', get: () => monsters.params.attivo, set: (v) => { monsters.params.attivo = v; } },
+  { key: 'mostroVel', get: () => monsters.params.velocita, set: (v) => { monsters.params.velocita = v; } },
+  { key: 'mostroDir', get: () => monsters.params.cambiDirezione, set: (v) => { monsters.params.cambiDirezione = v; } },
+  { key: 'mostri', get: () => monsters.serialize(), set: (v) => { monsters.deserialize(v); } },
+  { key: 'bambu', get: () => bamboo.params.densita, set: (v) => { bamboo.params.densita = v; bamboo.rebuild(); } },
+  { key: 'panda', get: () => panda.params.attivo, set: (v) => { panda.params.attivo = v; } },
+  { key: 'pandaVel', get: () => panda.params.velocita, set: (v) => { panda.params.velocita = v; } },
 ];
 const share = createShare(bindings);
 share.applyFromURL(); // prima della GUI, che così nasce già allineata
 
 // UI
-createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monster, share });
+createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, bamboo, panda, share });
 
 if (import.meta.env.DEV) {
-  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monster, share, state };
+  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monsters, bamboo, panda, share, state };
 }
 
 // resize
@@ -207,7 +217,9 @@ renderer.setAnimationLoop(() => {
   wind.update(dt);
   daisies.update(wind);
   roses.update(wind);
-  monster.update(time, dt);
+  bamboo.update(wind, dt);
+  if (bamboo.group.visible) panda.update(time, dt);
+  monsters.update(time, dt);
   if (state.vista === 'Occhi di insetto') {
     updateInsectView(dt);
   } else {

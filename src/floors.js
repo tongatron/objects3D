@@ -12,39 +12,68 @@ function canvasTexture(canvas, repeat) {
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(repeat, repeat);
   tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 8;
+  tex.anisotropy = 16;
   return tex;
 }
 
 function grassTexture() {
-  const size = 512;
+  const size = 2048;
   const canvas = makeCanvas(size);
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#3d5a26';
   ctx.fillRect(0, 0, size, size);
-  // chiazze di terra
-  for (let i = 0; i < 40; i++) {
+  // variazioni tonali di fondo (zone più chiare/scure)
+  for (let i = 0; i < 60; i++) {
     const x = Math.random() * size;
     const y = Math.random() * size;
-    const r = 10 + Math.random() * 30;
+    const r = 80 + Math.random() * 240;
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+    const dark = Math.random() < 0.5;
+    grad.addColorStop(0, dark ? 'rgba(30, 46, 18, 0.18)' : 'rgba(96, 128, 58, 0.14)');
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // chiazze di terra
+  for (let i = 0; i < 160; i++) {
+    const x = Math.random() * size;
+    const y = Math.random() * size;
+    const r = 40 + Math.random() * 120;
     ctx.fillStyle = `rgba(90, 68, 40, ${0.08 + Math.random() * 0.12})`;
     ctx.beginPath();
     ctx.ellipse(x, y, r, r * 0.7, Math.random() * Math.PI, 0, Math.PI * 2);
     ctx.fill();
   }
-  // fili d'erba
-  for (let i = 0; i < 9000; i++) {
+  // fili d'erba: strato profondo in ombra, poi strato luminoso
+  for (let layer = 0; layer < 2; layer++) {
+    const n = layer === 0 ? 60000 : 90000;
+    for (let i = 0; i < n; i++) {
+      const x = Math.random() * size;
+      const y = Math.random() * size;
+      const len = 12 + Math.random() * 26;
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2;
+      const g = layer === 0 ? 55 + Math.random() * 55 : 90 + Math.random() * 95;
+      ctx.strokeStyle = `rgba(${20 + Math.random() * 45}, ${g}, ${22 + Math.random() * 32}, ${layer === 0 ? 0.55 : 0.8})`;
+      ctx.lineWidth = 1.2 + Math.random() * 1.6;
+      // filo leggermente curvo (quadratica) invece che segmento dritto
+      const cx = x + Math.cos(angle) * len * 0.5 + (Math.random() - 0.5) * 6;
+      const cy = y + Math.sin(angle) * len * 0.5;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(cx, cy, x + Math.cos(angle) * len + (Math.random() - 0.5) * 8, y + Math.sin(angle) * len);
+      ctx.stroke();
+    }
+  }
+  // qualche fiorellino sparso
+  for (let i = 0; i < 220; i++) {
     const x = Math.random() * size;
     const y = Math.random() * size;
-    const len = 3 + Math.random() * 6;
-    const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2;
-    const g = 90 + Math.floor(Math.random() * 90);
-    ctx.strokeStyle = `rgba(${30 + Math.random() * 40}, ${g}, ${30 + Math.random() * 30}, 0.8)`;
-    ctx.lineWidth = 1;
+    ctx.fillStyle = Math.random() < 0.5 ? 'rgba(235, 230, 200, 0.55)' : 'rgba(220, 200, 90, 0.5)';
     ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + Math.cos(angle) * len, y + Math.sin(angle) * len);
-    ctx.stroke();
+    ctx.arc(x, y, 1 + Math.random() * 1.6, 0, Math.PI * 2);
+    ctx.fill();
   }
   return canvasTexture(canvas, 6);
 }

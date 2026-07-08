@@ -8,6 +8,8 @@
 
 **Revisione 2026-07-08**: rimossa la Yaris ibrida dagli oggetti su richiesta dell'utente; aumentata la definizione geometrica di girasoli e orsetto.
 
+**Revisione 2026-07-08 (2)**: aggiunta la simulazione di insetti (falene) con fototassi: volano a spirale attorno alle luci artificiali accese, si scontrano con esse e cadono stordite per poi riprendere il volo. Parametri: attivi, numero, velocità, attrazione (FR-011).
+
 **Input**: User description: "Pagina con vista interattiva di oggetti 3D (girasoli, Yaris ibrida ultimo modello, orsetto peluche) con variabili di sfondo/pavimento (terra erbosa, garage, parquet) e illuminazione (neon bruciato con interruzioni, luce ambientale, lampadina a incandescenza)."
 
 ## User Scenarios & Testing *(mandatory)*
@@ -71,6 +73,7 @@ L'utente attiva/disattiva e regola tre sorgenti: un neon bruciato che sfarfalla 
 - **FR-008**: Ogni luce DEVE poter essere attivata/disattivata indipendentemente.
 - **FR-009**: Gli oggetti DEVONO proiettare e ricevere ombre dalle luci direzionabili.
 - **FR-010**: L'interfaccia dei controlli DEVE essere in italiano.
+- **FR-011**: Il sistema DEVE simulare falene attratte dalle sole luci artificiali localizzate e accese (neon e lampadina, non l'ambientale): volo a spirale con jitter, collisione con la sorgente, stordimento con caduta e ripresa. Con tutte le luci spente le falene vagano. Parametri regolabili: attive, numero, velocità, attrazione.
 
 ### Key Entities
 

@@ -6,6 +6,7 @@ import { createTeddy } from './objects/teddy.js';
 import { createNeon } from './lights/neon.js';
 import { createAmbient } from './lights/ambient.js';
 import { createBulb } from './lights/bulb.js';
+import { createInsects } from './insects.js';
 import { createUI } from './ui.js';
 
 const container = document.getElementById('app');
@@ -55,6 +56,10 @@ const neon = createNeon(scene);
 const ambient = createAmbient(scene);
 const bulb = createBulb(scene);
 
+// insetti attratti dalle luci
+const insects = createInsects(scene);
+insects.bindLights({ neon, bulb });
+
 // stato iniziale
 const state = {
   oggetto: 'Girasoli',
@@ -64,7 +69,11 @@ setObject(state.oggetto);
 floor.setFloor(state.pavimento);
 
 // UI
-createUI({ state, setObject, setFloor: floor.setFloor, neon, ambient, bulb });
+createUI({ state, setObject, setFloor: floor.setFloor, neon, ambient, bulb, insects });
+
+if (import.meta.env.DEV) {
+  window.__debug = { insects, neon, bulb, camera, controls };
+}
 
 // resize
 window.addEventListener('resize', () => {
@@ -79,6 +88,7 @@ renderer.setAnimationLoop(() => {
   const dt = Math.min(clock.getDelta(), 0.1);
   const time = clock.elapsedTime;
   neon.update(time, dt);
+  insects.update(time, dt);
   controls.update();
   renderer.render(scene, camera);
 });

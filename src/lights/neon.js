@@ -138,5 +138,11 @@ export function createNeon(scene) {
     tubeMat.color.setHex(level > 0.05 ? 0x888888 : 0x3a3a3e);
   }
 
-  return { group, params, update, rebuildTube };
+  return {
+    group,
+    params,
+    update,
+    rebuildTube,
+    getLevel: () => (params.acceso ? flicker.level : 0),
+  };
 }

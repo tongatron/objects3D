@@ -16,6 +16,7 @@
 - [x] T004 [P] [US1] Girasoli procedurali in `src/objects/sunflowers.js`
 - [x] ~~T005 [P] [US1] Yaris ibrida stilizzata in `src/objects/yaris.js`~~ (rimossa nella revisione 2026-07-08)
 - [x] T014 Aumento definizione geometrica di girasoli e orsetto (revisione 2026-07-08)
+- [x] T015 Simulazione falene con fototassi e collisioni in `src/insects.js` (revisione 2026-07-08)
 - [x] T006 [P] [US1] Orsetto peluche in `src/objects/teddy.js`
 - [x] T007 [US1] Selettore oggetto (show/hide) in `src/main.js`
 

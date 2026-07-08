@@ -1,7 +1,7 @@
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { FLOOR_PRESETS } from './floors.js';
 
-export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects }) {
+export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista }) {
   const gui = new GUI({ title: 'Controlli scena' });
 
   // --- scena ---
@@ -12,6 +12,12 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
   gui.add(state, 'pavimento', Object.keys(FLOOR_PRESETS))
     .name('Pavimento')
     .onChange(setFloor);
+
+  const vistaCtrl = gui.add(state, 'vista', ['Orbitale', 'Occhi di insetto'])
+    .name('Vista')
+    .onChange(setVista);
+  // se le falene spariscono, la vista torna orbitale: tieni il menu allineato
+  setInterval(() => vistaCtrl.updateDisplay(), 500);
 
   // --- neon bruciato ---
   const neonFolder = gui.addFolder('Neon bruciato');

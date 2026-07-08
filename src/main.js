@@ -1,5 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { CompoundEyeShader } from './compoundEye.js';
 import { createFloor } from './floors.js';
 import { createSunflowers } from './objects/sunflowers.js';
 import { createTeddy } from './objects/teddy.js';
@@ -60,16 +65,66 @@ const bulb = createBulb(scene);
 const insects = createInsects(scene);
 insects.bindLights({ neon, bulb });
 
+// post-processing: mosaico "occhio composto" attivo solo in vista insetto
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const eyePass = new ShaderPass(CompoundEyeShader);
+eyePass.enabled = false;
+eyePass.uniforms.aspect.value = window.innerWidth / window.innerHeight;
+composer.addPass(eyePass);
+composer.addPass(new OutputPass());
+
 // stato iniziale
 const state = {
   oggetto: 'Girasoli',
   pavimento: 'Terra erbosa',
+  vista: 'Orbitale',
 };
 setObject(state.oggetto);
 floor.setFloor(state.pavimento);
 
+// vista soggettiva: la camera segue la prima falena
+const ORBITAL_FOV = 50;
+const INSECT_FOV = 105;
+const camPos = new THREE.Vector3();
+const lookDir = new THREE.Vector3(1, 0, 0);
+const lookAt = new THREE.Vector3();
+
+function setVista(name) {
+  const insect = name === 'Occhi di insetto';
+  eyePass.enabled = insect;
+  controls.enabled = !insect;
+  insects.setPOVHidden(insect);
+  camera.fov = insect ? INSECT_FOV : ORBITAL_FOV;
+  camera.updateProjectionMatrix();
+  if (!insect) {
+    camera.position.set(5, 3.2, 6);
+    controls.target.set(0, 0.9, 0);
+  }
+}
+
+function updateInsectView(dt) {
+  const pov = insects.getPOV();
+  if (!pov) {
+    setVista('Orbitale');
+    state.vista = 'Orbitale';
+    return;
+  }
+  // inseguimento smorzato: niente scatti nonostante il jitter del volo
+  const k = 1 - Math.pow(0.00005, dt);
+  camPos.copy(pov.pos);
+  camera.position.lerp(camPos, k);
+  if (pov.vel.lengthSq() > 0.01) {
+    lookDir.lerp(camPos.copy(pov.vel).normalize(), 1 - Math.pow(0.002, dt)).normalize();
+  }
+  lookAt.copy(camera.position).add(lookDir);
+  camera.lookAt(lookAt);
+  // rollio da caduta quando la falena è stordita
+  if (pov.stunned) camera.rotation.z += Math.sin(performance.now() * 0.02) * 0.15;
+}
+
 // UI
-createUI({ state, setObject, setFloor: floor.setFloor, neon, ambient, bulb, insects });
+createUI({ state, setObject, setFloor: floor.setFloor, neon, ambient, bulb, insects, setVista });
 
 if (import.meta.env.DEV) {
   window.__debug = { insects, neon, bulb, camera, controls };
@@ -80,6 +135,8 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
+  eyePass.uniforms.aspect.value = window.innerWidth / window.innerHeight;
 });
 
 // loop
@@ -89,6 +146,10 @@ renderer.setAnimationLoop(() => {
   const time = clock.elapsedTime;
   neon.update(time, dt);
   insects.update(time, dt);
-  controls.update();
-  renderer.render(scene, camera);
+  if (state.vista === 'Occhi di insetto') {
+    updateInsectView(dt);
+  } else {
+    controls.update();
+  }
+  composer.render();
 });

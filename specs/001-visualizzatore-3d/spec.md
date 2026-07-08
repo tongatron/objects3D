@@ -10,6 +10,8 @@
 
 **Revisione 2026-07-08 (2)**: aggiunta la simulazione di insetti (falene) con fototassi: volano a spirale attorno alle luci artificiali accese, si scontrano con esse e cadono stordite per poi riprendere il volo. Parametri: attivi, numero, velocità, attrazione (FR-011).
 
+**Revisione 2026-07-08 (3)**: aggiunta la vista soggettiva "Occhi di insetto" (FR-012): camera agganciata a una falena con FOV largo, inseguimento smorzato ed effetto occhio composto (mosaico esagonale, fisheye, vignettatura) in post-processing.
+
 **Input**: User description: "Pagina con vista interattiva di oggetti 3D (girasoli, Yaris ibrida ultimo modello, orsetto peluche) con variabili di sfondo/pavimento (terra erbosa, garage, parquet) e illuminazione (neon bruciato con interruzioni, luce ambientale, lampadina a incandescenza)."
 
 ## User Scenarios & Testing *(mandatory)*
@@ -74,6 +76,7 @@ L'utente attiva/disattiva e regola tre sorgenti: un neon bruciato che sfarfalla 
 - **FR-009**: Gli oggetti DEVONO proiettare e ricevere ombre dalle luci direzionabili.
 - **FR-010**: L'interfaccia dei controlli DEVE essere in italiano.
 - **FR-011**: Il sistema DEVE simulare falene attratte dalle sole luci artificiali localizzate e accese (neon e lampadina, non l'ambientale): volo a spirale con jitter, collisione con la sorgente, stordimento con caduta e ripresa. Con tutte le luci spente le falene vagano. Parametri regolabili: attive, numero, velocità, attrazione.
+- **FR-012**: L'utente DEVE poter scegliere tra vista "Orbitale" e "Occhi di insetto"; la seconda segue una falena in prima persona (urti e stordimenti compresi), applica un effetto occhio composto e torna automaticamente all'orbitale se le falene sono disattivate o assenti. La falena seguita è nascosta per non occludere la visuale.
 
 ### Key Entities
 

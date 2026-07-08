@@ -250,5 +250,20 @@ export function createInsects(scene) {
     }
   }
 
-  return { params, group, update, setCount, bindLights };
+  // punto di vista della prima falena, per la camera soggettiva
+  let povHidden = false;
+  function getPOV() {
+    const m = moths[0];
+    if (!m || !params.attivi) return null;
+    m.mesh.visible = !povHidden;
+    return { pos: m.pos, vel: m.vel, stunned: m.stun > 0 };
+  }
+
+  // in vista soggettiva la falena seguita non deve occludere la camera
+  function setPOVHidden(hidden) {
+    povHidden = hidden;
+    if (moths[0]) moths[0].mesh.visible = !hidden;
+  }
+
+  return { params, group, update, setCount, bindLights, getPOV, setPOVHidden };
 }

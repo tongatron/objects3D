@@ -5,8 +5,8 @@ import * as THREE from 'three';
 // accumulato scalato dalla velocità, così cambiarla non fa "saltare" la fase.
 export function createWind() {
   const params = {
-    intensita: 0.6,
-    velocita: 1.0,
+    intensita: 1.35,
+    velocita: 1.5,
     direzione: 35, // gradi
   };
 

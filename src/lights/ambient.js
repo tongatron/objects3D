@@ -3,7 +3,7 @@ import * as THREE from 'three';
 export function createAmbient(scene) {
   const params = {
     accesa: true,
-    intensita: 0.4,
+    intensita: 0.24,
     colore: '#b8c4d0',
   };
 

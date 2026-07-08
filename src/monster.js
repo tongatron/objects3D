@@ -41,7 +41,7 @@ function furMesh(bodyRadius, count, baseColor) {
 
 export function createMonster(scene) {
   const params = {
-    attivo: false,
+    attivo: true,
     velocita: 1.2,
     cambiDirezione: 0.7, // cambi medi al secondo
   };

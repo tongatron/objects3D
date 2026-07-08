@@ -4,9 +4,9 @@ const WARM = 0xffb46b; // ~2700K
 
 export function createBulb(scene) {
   const params = {
-    accesa: false,
-    intensita: 25,
-    altezza: 3.2,
+    accesa: true,
+    intensita: 17,
+    altezza: 1.1,
   };
 
   const group = new THREE.Group();

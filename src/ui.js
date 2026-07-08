@@ -2,7 +2,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { FLOOR_PRESETS } from './floors.js';
 
 export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monster, share }) {
-  const gui = new GUI({ title: 'Controlli scena' });
+  const gui = new GUI({ title: 'Impostazioni' });
 
   // --- condivisione ---
   const shareBtn = gui.add({
@@ -84,6 +84,68 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
     .onChange((n) => insects.setCount(n));
   insectFolder.add(insects.params, 'velocita', 0.2, 3, 0.05).name('Velocità');
   insectFolder.add(insects.params, 'attrazione', 0, 3, 0.05).name('Attrazione alle luci');
+
+  // --- pannello nascosto di default, apribile con l'icona ingranaggio ---
+  const panel = gui.domElement;
+  panel.style.display = 'none';
+
+  // icona impostazioni (ingranaggio), gradevole anche da mobile
+  const btn = document.createElement('button');
+  btn.setAttribute('aria-label', 'Impostazioni');
+  btn.title = 'Impostazioni';
+  btn.innerHTML =
+    '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+  Object.assign(btn.style, {
+    position: 'fixed',
+    top: 'max(12px, env(safe-area-inset-top))',
+    right: 'max(12px, env(safe-area-inset-right))',
+    width: '48px',
+    height: '48px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '0',
+    borderRadius: '50%',
+    border: 'none',
+    background: 'rgba(20,20,20,0.6)',
+    color: '#fff',
+    cursor: 'pointer',
+    zIndex: '1000',
+    backdropFilter: 'blur(6px)',
+    WebkitBackdropFilter: 'blur(6px)',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.4)',
+    touchAction: 'manipulation',
+  });
+
+  function setOpen(open) {
+    panel.style.display = open ? '' : 'none';
+    btn.style.display = open ? 'none' : 'flex';
+  }
+  btn.addEventListener('click', () => setOpen(true));
+
+  // pulsante di chiusura nella barra del titolo del pannello
+  const closeBtn = document.createElement('button');
+  closeBtn.setAttribute('aria-label', 'Chiudi');
+  closeBtn.title = 'Chiudi';
+  closeBtn.textContent = '✕';
+  Object.assign(closeBtn.style, {
+    position: 'absolute',
+    top: '0',
+    right: '0',
+    width: '34px',
+    height: '34px',
+    lineHeight: '34px',
+    border: 'none',
+    background: 'transparent',
+    color: '#fff',
+    fontSize: '16px',
+    cursor: 'pointer',
+    zIndex: '2',
+  });
+  closeBtn.addEventListener('click', () => setOpen(false));
+  panel.appendChild(closeBtn);
+
+  document.body.appendChild(btn);
 
   return gui;
 }

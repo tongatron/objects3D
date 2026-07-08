@@ -100,7 +100,7 @@ composer.addPass(new OutputPass());
 
 // stato iniziale
 const state = {
-  oggetto: 'Girasoli',
+  oggetto: 'Campo di rose rosse',
   pavimento: 'Terra erbosa',
   vista: 'Orbitale',
 };

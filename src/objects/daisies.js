@@ -47,7 +47,7 @@ function leafGeometry() {
 }
 
 export function createDaisies() {
-  const params = { densita: 90 };
+  const params = { densita: 80 };
 
   const group = new THREE.Group();
   group.name = 'margherite';

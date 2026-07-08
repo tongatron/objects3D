@@ -14,7 +14,7 @@ export function createNeon(scene) {
 
   const params = {
     acceso: true,
-    intensita: 12,
+    intensita: 15.5,
     lunghezza: 3.0,
     diametro: 0.06,
     frequenzaInterruzioni: 0.8, // burst medi al secondo

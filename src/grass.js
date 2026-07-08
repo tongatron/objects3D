@@ -32,7 +32,7 @@ function bladeGeometry() {
 }
 
 export function createGrass(scene, wind) {
-  const params = { altezza: 1.0 };
+  const params = { altezza: 3.0 };
   const uHeight = { value: params.altezza };
 
   const material = new THREE.MeshStandardMaterial({

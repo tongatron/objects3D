@@ -73,7 +73,7 @@ function leafGeometry() {
 }
 
 export function createRoses() {
-  const params = { densita: 90 };
+  const params = { densita: 300 };
 
   const group = new THREE.Group();
   group.name = 'rose';

@@ -63,9 +63,9 @@ function makeMoth() {
 export function createInsects(scene) {
   const params = {
     attivi: true,
-    numero: 14,
-    velocita: 1.0,
-    attrazione: 1.0,
+    numero: 39,
+    velocita: 0.95,
+    attrazione: 2.5,
   };
 
   const group = new THREE.Group();

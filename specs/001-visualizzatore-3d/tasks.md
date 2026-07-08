@@ -19,6 +19,8 @@
 - [x] T015 Simulazione falene con fototassi e collisioni in `src/insects.js` (revisione 2026-07-08)
 - [x] T016 Vista soggettiva "Occhi di insetto" con shader occhio composto in `src/compoundEye.js` + camera follow in `src/main.js` (revisione 2026-07-08)
 - [x] T017 Campo di margherite ad alta definizione con InstancedMesh in `src/objects/daisies.js` (revisione 2026-07-08)
+- [x] T018 Densità margherite variabile con rebuild in `src/objects/daisies.js` + slider in `src/ui.js` (revisione 2026-07-08)
+- [x] T019 Vento parametrico condiviso in `src/wind.js`: margherite su CPU, erba 3D istanziata con sway in vertex shader in `src/grass.js` (revisione 2026-07-08)
 - [x] T006 [P] [US1] Orsetto peluche in `src/objects/teddy.js`
 - [x] T007 [US1] Selettore oggetto (show/hide) in `src/main.js`
 

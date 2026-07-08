@@ -1,7 +1,7 @@
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { FLOOR_PRESETS } from './floors.js';
 
-export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista }) {
+export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies }) {
   const gui = new GUI({ title: 'Controlli scena' });
 
   // --- scena ---
@@ -18,6 +18,17 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
     .onChange(setVista);
   // se le falene spariscono, la vista torna orbitale: tieni il menu allineato
   setInterval(() => vistaCtrl.updateDisplay(), 500);
+
+  // --- margherite ---
+  const daisyFolder = gui.addFolder('Margherite');
+  daisyFolder.add(daisies.params, 'densita', 10, 300, 5).name('Densità (piante)')
+    .onFinishChange(() => daisies.rebuild());
+
+  // --- vento ---
+  const windFolder = gui.addFolder('Vento');
+  windFolder.add(wind.params, 'intensita', 0, 2, 0.05).name('Intensità');
+  windFolder.add(wind.params, 'velocita', 0.1, 3, 0.05).name('Velocità');
+  windFolder.add(wind.params, 'direzione', 0, 360, 5).name('Direzione (°)');
 
   // --- neon bruciato ---
   const neonFolder = gui.addFolder('Neon bruciato');

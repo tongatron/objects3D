@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 
-// Campo di margherite ad alta definizione. Le piante sono tante (~90),
+// Campo di margherite ad alta definizione. Le piante sono tante,
 // quindi ogni parte (steli, foglie, petali, centri) è un InstancedMesh:
-// geometrie dense, un solo draw call per parte.
+// geometrie dense, un solo draw call per parte. Il vento ondeggia le
+// piante ricalcolando per frame le matrici (petali = matrice del capolino
+// moltiplicata per la matrice locale del petalo, calcolata una volta sola).
 
-const FLOWER_COUNT = 90;
 const PETALS_PER_FLOWER = 20;
 const FIELD_RADIUS = 5.5;
+const MAX_FLOWERS = 300;
 
 function petalGeometry() {
   // petalo bianco a lingua, punta arrotondata, leggera conca
@@ -45,7 +47,10 @@ function leafGeometry() {
 }
 
 export function createDaisies() {
+  const params = { densita: 90 };
+
   const group = new THREE.Group();
+  group.name = 'margherite';
 
   const stemMat = new THREE.MeshStandardMaterial({ color: 0x4a7a2a, roughness: 0.9 });
   const leafMat = new THREE.MeshStandardMaterial({ color: 0x3f6b24, roughness: 0.9, side: THREE.DoubleSide });
@@ -60,88 +65,132 @@ export function createDaisies() {
   const centerGeo = new THREE.SphereGeometry(0.028, 24, 16);
   centerGeo.scale(1, 1, 0.55);
 
-  const stems = new THREE.InstancedMesh(stemGeo, stemMat, FLOWER_COUNT);
-  const petals = new THREE.InstancedMesh(petalGeo, petalMat, FLOWER_COUNT * PETALS_PER_FLOWER);
-  const leaves = new THREE.InstancedMesh(leafGeo, leafMat, FLOWER_COUNT * 2);
-  const centers = new THREE.InstancedMesh(centerGeo, centerMat, FLOWER_COUNT);
-  for (const im of [stems, petals, leaves, centers]) im.castShadow = true;
+  let stems = null;
+  let petals = null;
+  let leaves = null;
+  let centers = null;
+  let flowers = []; // dati statici per pianta, per l'animazione del vento
 
   const dummy = new THREE.Object3D();
   const headM = new THREE.Matrix4();
-  const ringM = new THREE.Matrix4();
   const petalM = new THREE.Matrix4();
   const faceUp = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
-  const tiltQ = new THREE.Quaternion();
+  const windQ = new THREE.Quaternion();
+  const flowerQ = new THREE.Quaternion();
   const headQ = new THREE.Quaternion();
+  const axis = new THREE.Vector3();
   const top = new THREE.Vector3();
   const one = new THREE.Vector3(1, 1, 1);
+  const scl = new THREE.Vector3();
 
-  let petalIdx = 0;
-  let leafIdx = 0;
-  for (let i = 0; i < FLOWER_COUNT; i++) {
-    // distribuzione: più fitto al centro, mai perfettamente in griglia
-    const a = Math.random() * Math.PI * 2;
-    const r = Math.sqrt(Math.random()) * FIELD_RADIUS;
-    const x = Math.cos(a) * r;
-    const z = Math.sin(a) * r;
-    const h = 0.28 + Math.random() * 0.22;
-
-    // inclinazione casuale dello stelo
-    tiltQ.setFromEuler(new THREE.Euler(
-      (Math.random() - 0.5) * 0.35,
-      Math.random() * Math.PI * 2,
-      (Math.random() - 0.5) * 0.35
-    ));
-
-    // stelo
-    dummy.position.set(x, 0, z);
-    dummy.quaternion.copy(tiltQ);
-    dummy.scale.set(1, h, 1);
-    dummy.updateMatrix();
-    stems.setMatrixAt(i, dummy.matrix);
-
-    // sommità dello stelo in coordinate del gruppo
-    top.set(0, h, 0).applyQuaternion(tiltQ);
-    top.x += x;
-    top.z += z;
-
-    // capolino rivolto verso l'alto, ereditando l'inclinazione dello stelo
-    headQ.copy(tiltQ).multiply(faceUp);
-    headM.compose(top, headQ, one);
-
-    // centro giallo bombato
-    dummy.position.copy(top);
-    dummy.quaternion.copy(headQ);
-    const cs = 0.85 + Math.random() * 0.35;
-    dummy.scale.set(cs, cs, cs);
-    dummy.updateMatrix();
-    centers.setMatrixAt(i, dummy.matrix);
-
-    // corona di petali
-    const petalScale = 0.85 + Math.random() * 0.3;
-    for (let p = 0; p < PETALS_PER_FLOWER; p++) {
-      const ang = (p / PETALS_PER_FLOWER) * Math.PI * 2 + Math.random() * 0.1;
-      dummy.position.set(0, 0, 0.004);
-      dummy.quaternion.setFromEuler(new THREE.Euler(-0.18 + Math.random() * 0.1, 0, ang));
-      dummy.scale.set(petalScale, petalScale, petalScale);
-      dummy.updateMatrix();
-      ringM.copy(dummy.matrix);
-      petalM.multiplyMatrices(headM, ringM);
-      petals.setMatrixAt(petalIdx++, petalM);
+  function rebuild() {
+    const count = Math.round(THREE.MathUtils.clamp(params.densita, 1, MAX_FLOWERS));
+    for (const im of [stems, petals, leaves, centers]) {
+      if (im) { group.remove(im); im.dispose(); }
     }
 
-    // due foglie alla base
-    for (let l = 0; l < 2; l++) {
-      dummy.position.set(x + (Math.random() - 0.5) * 0.05, 0.005, z + (Math.random() - 0.5) * 0.05);
-      dummy.quaternion.setFromEuler(new THREE.Euler(-Math.PI / 2 + 0.5 + Math.random() * 0.3, Math.random() * Math.PI * 2, 0));
-      const ls = 1.4 + Math.random() * 0.8;
-      dummy.scale.set(ls, ls, ls);
-      dummy.updateMatrix();
-      leaves.setMatrixAt(leafIdx++, dummy.matrix);
+    stems = new THREE.InstancedMesh(stemGeo, stemMat, count);
+    petals = new THREE.InstancedMesh(petalGeo, petalMat, count * PETALS_PER_FLOWER);
+    leaves = new THREE.InstancedMesh(leafGeo, leafMat, count * 2);
+    centers = new THREE.InstancedMesh(centerGeo, centerMat, count);
+    for (const im of [stems, petals, leaves, centers]) {
+      im.castShadow = true;
+      im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     }
+
+    flowers = [];
+    let leafIdx = 0;
+    for (let i = 0; i < count; i++) {
+      // distribuzione: più fitto al centro, mai perfettamente in griglia
+      const a = Math.random() * Math.PI * 2;
+      const r = Math.sqrt(Math.random()) * FIELD_RADIUS;
+      const x = Math.cos(a) * r;
+      const z = Math.sin(a) * r;
+      const h = 0.28 + Math.random() * 0.22;
+
+      const tiltQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+        (Math.random() - 0.5) * 0.35,
+        Math.random() * Math.PI * 2,
+        (Math.random() - 0.5) * 0.35
+      ));
+
+      // matrici locali dei petali (fisse: il vento muove tutto il capolino)
+      const petalScale = 0.85 + Math.random() * 0.3;
+      const rings = [];
+      for (let p = 0; p < PETALS_PER_FLOWER; p++) {
+        const ang = (p / PETALS_PER_FLOWER) * Math.PI * 2 + Math.random() * 0.1;
+        dummy.position.set(0, 0, 0.004);
+        dummy.quaternion.setFromEuler(new THREE.Euler(-0.18 + Math.random() * 0.1, 0, ang));
+        dummy.scale.set(petalScale, petalScale, petalScale);
+        dummy.updateMatrix();
+        rings.push(dummy.matrix.clone());
+      }
+
+      flowers.push({ x, z, h, tiltQ, rings, centerScale: 0.85 + Math.random() * 0.35 });
+
+      // due foglie alla base (statiche)
+      for (let l = 0; l < 2; l++) {
+        dummy.position.set(x + (Math.random() - 0.5) * 0.05, 0.005, z + (Math.random() - 0.5) * 0.05);
+        dummy.quaternion.setFromEuler(new THREE.Euler(-Math.PI / 2 + 0.5 + Math.random() * 0.3, Math.random() * Math.PI * 2, 0));
+        const ls = 1.4 + Math.random() * 0.8;
+        dummy.scale.set(ls, ls, ls);
+        dummy.updateMatrix();
+        leaves.setMatrixAt(leafIdx++, dummy.matrix);
+      }
+    }
+    group.add(stems, petals, leaves, centers);
+    pose(null); // posa iniziale senza vento
   }
 
-  group.add(stems, petals, leaves, centers);
-  group.name = 'margherite';
-  return group;
+  // ricalcola le matrici di steli, centri e petali; wind può essere null
+  function pose(wind) {
+    let petalIdx = 0;
+    for (let i = 0; i < flowers.length; i++) {
+      const f = flowers[i];
+
+      if (wind) {
+        // piega attorno all'asse orizzontale perpendicolare al vento
+        const sw = wind.sway(f.x, f.z) * 0.3;
+        axis.set(wind.dir.y, 0, -wind.dir.x); // = cross(Y, dir)
+        windQ.setFromAxisAngle(axis, -sw);
+        flowerQ.copy(windQ).multiply(f.tiltQ);
+      } else {
+        flowerQ.copy(f.tiltQ);
+      }
+
+      dummy.position.set(f.x, 0, f.z);
+      dummy.quaternion.copy(flowerQ);
+      dummy.scale.set(1, f.h, 1);
+      dummy.updateMatrix();
+      stems.setMatrixAt(i, dummy.matrix);
+
+      top.set(0, f.h, 0).applyQuaternion(flowerQ);
+      top.x += f.x;
+      top.z += f.z;
+
+      headQ.copy(flowerQ).multiply(faceUp);
+
+      scl.setScalar(f.centerScale);
+      headM.compose(top, headQ, scl);
+      centers.setMatrixAt(i, headM);
+
+      headM.compose(top, headQ, one);
+      for (const ring of f.rings) {
+        petalM.multiplyMatrices(headM, ring);
+        petals.setMatrixAt(petalIdx++, petalM);
+      }
+    }
+    stems.instanceMatrix.needsUpdate = true;
+    centers.instanceMatrix.needsUpdate = true;
+    petals.instanceMatrix.needsUpdate = true;
+  }
+
+  function update(wind) {
+    if (!group.visible) return;
+    pose(wind);
+  }
+
+  rebuild();
+
+  return { group, params, rebuild, update };
 }

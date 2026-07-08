@@ -13,6 +13,8 @@ import { createNeon } from './lights/neon.js';
 import { createAmbient } from './lights/ambient.js';
 import { createBulb } from './lights/bulb.js';
 import { createInsects } from './insects.js';
+import { createWind } from './wind.js';
+import { createGrass } from './grass.js';
 import { createUI } from './ui.js';
 
 const container = document.getElementById('app');
@@ -41,10 +43,22 @@ controls.maxDistance = 20;
 // pavimento
 const floor = createFloor(scene);
 
+// vento condiviso da margherite ed erba
+const wind = createWind();
+
+// erba 3D, visibile solo sul pavimento erboso
+const grass = createGrass(scene, wind);
+
+function applyFloor(name) {
+  floor.setFloor(name);
+  grass.setVisible(name === 'Terra erbosa');
+}
+
 // oggetti (uno visibile alla volta)
+const daisies = createDaisies();
 const objects = {
   'Girasoli': createSunflowers(),
-  'Campo di margherite': createDaisies(),
+  'Campo di margherite': daisies.group,
   'Orsetto peluche': createTeddy(),
 };
 for (const obj of Object.values(objects)) {
@@ -83,7 +97,7 @@ const state = {
   vista: 'Orbitale',
 };
 setObject(state.oggetto);
-floor.setFloor(state.pavimento);
+applyFloor(state.pavimento);
 
 // vista soggettiva: la camera segue la prima falena
 const ORBITAL_FOV = 50;
@@ -126,10 +140,10 @@ function updateInsectView(dt) {
 }
 
 // UI
-createUI({ state, setObject, setFloor: floor.setFloor, neon, ambient, bulb, insects, setVista });
+createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies });
 
 if (import.meta.env.DEV) {
-  window.__debug = { insects, neon, bulb, camera, controls };
+  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, grass };
 }
 
 // resize
@@ -148,6 +162,8 @@ renderer.setAnimationLoop(() => {
   const time = clock.elapsedTime;
   neon.update(time, dt);
   insects.update(time, dt);
+  wind.update(dt);
+  daisies.update(wind);
   if (state.vista === 'Occhi di insetto') {
     updateInsectView(dt);
   } else {

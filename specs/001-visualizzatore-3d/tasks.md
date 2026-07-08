@@ -23,6 +23,7 @@
 - [x] T019 Vento parametrico condiviso in `src/wind.js`: margherite su CPU, erba 3D istanziata con sway in vertex shader in `src/grass.js` (revisione 2026-07-08)
 - [x] T020 Campo di rose rosse a verticilli con densità e vento in `src/objects/roses.js` (revisione 2026-07-08)
 - [x] T021 Parametro altezza erba via uniform nel vertex shader in `src/grass.js` (revisione 2026-07-08)
+- [x] T022 Mostriciattolo peloso opzionale con corsa e cambi di direzione in `src/monster.js` (revisione 2026-07-08)
 - [x] T006 [P] [US1] Orsetto peluche in `src/objects/teddy.js`
 - [x] T007 [US1] Selettore oggetto (show/hide) in `src/main.js`
 

@@ -15,6 +15,7 @@ import { createAmbient } from './lights/ambient.js';
 import { createBulb } from './lights/bulb.js';
 import { createInsects } from './insects.js';
 import { createWind } from './wind.js';
+import { createMonster } from './monster.js';
 import { createGrass } from './grass.js';
 import { createUI } from './ui.js';
 
@@ -84,6 +85,9 @@ const bulb = createBulb(scene);
 const insects = createInsects(scene);
 insects.bindLights({ neon, bulb });
 
+// mostriciattolo che corre nel campo (opzionale)
+const monster = createMonster(scene);
+
 // post-processing: mosaico "occhio composto" attivo solo in vista insetto
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
@@ -143,10 +147,10 @@ function updateInsectView(dt) {
 }
 
 // UI
-createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass });
+createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monster });
 
 if (import.meta.env.DEV) {
-  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass };
+  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monster };
 }
 
 // resize
@@ -168,6 +172,7 @@ renderer.setAnimationLoop(() => {
   wind.update(dt);
   daisies.update(wind);
   roses.update(wind);
+  monster.update(time, dt);
   if (state.vista === 'Occhi di insetto') {
     updateInsectView(dt);
   } else {

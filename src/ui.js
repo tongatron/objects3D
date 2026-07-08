@@ -1,7 +1,7 @@
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { FLOOR_PRESETS } from './floors.js';
 
-export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass }) {
+export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monster }) {
   const gui = new GUI({ title: 'Controlli scena' });
 
   // --- scena ---
@@ -61,6 +61,12 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
   bulbFolder.add(bulb.params, 'accesa').name('Accesa').onChange(bulb.apply);
   bulbFolder.add(bulb.params, 'intensita', 0, 100, 1).name('Intensità').onChange(bulb.apply);
   bulbFolder.add(bulb.params, 'altezza', 1.0, 5, 0.1).name('Altezza (m)').onChange(bulb.apply);
+
+  // --- mostriciattolo ---
+  const monsterFolder = gui.addFolder('Mostriciattolo');
+  monsterFolder.add(monster.params, 'attivo').name('Attivo');
+  monsterFolder.add(monster.params, 'velocita', 0.2, 4, 0.05).name('Velocità');
+  monsterFolder.add(monster.params, 'cambiDirezione', 0, 3, 0.05).name('Cambi di direzione');
 
   // --- insetti ---
   const insectFolder = gui.addFolder('Insetti (falene)');

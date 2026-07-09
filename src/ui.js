@@ -2,7 +2,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { FLOOR_PRESETS } from './floors.js';
 import { MONSTER_STYLES } from './monster.js';
 
-export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, mower, bamboo, panda, share }) {
+export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, mower, bamboo, panda, xiao, share }) {
   const gui = new GUI({ title: 'Impostazioni' });
 
   // --- condivisione ---
@@ -15,7 +15,7 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
   }, 'copia').name('Copia link impostazioni');
 
   // --- scena ---
-  gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Campo di rose rosse', 'Foresta di bambù', 'Orsetto peluche'])
+  gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Campo di rose rosse', 'Foresta di bambù', 'Orsetto peluche', 'XIAO ESP32-C3'])
     .name('Oggetto')
     .onChange(setObject);
 
@@ -45,6 +45,11 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
     .onFinishChange(() => bamboo.rebuild());
   bambooFolder.add(panda.params, 'attivo').name('Panda');
   bambooFolder.add(panda.params, 'velocita', 0.2, 2, 0.05).name('Velocità panda');
+
+  // --- scheda XIAO ESP32-C3 ---
+  const xiaoFolder = gui.addFolder('XIAO ESP32-C3');
+  xiaoFolder.add(xiao.params, 'esploso', 0, 1, 0.01).name('Vista esplosa');
+  xiaoFolder.add(xiao.params, 'rotazione').name('Rotazione');
 
   // --- vento ---
   const windFolder = gui.addFolder('Vento');

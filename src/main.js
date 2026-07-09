@@ -10,6 +10,7 @@ import { createSunflowers } from './objects/sunflowers.js';
 import { createDaisies } from './objects/daisies.js';
 import { createRoses } from './objects/roses.js';
 import { createTeddy } from './objects/teddy.js';
+import { createXiao } from './objects/xiao.js';
 import { createBamboo } from './objects/bamboo.js';
 import { createPanda } from './panda.js';
 import { createNeon } from './lights/neon.js';
@@ -66,12 +67,14 @@ const roses = createRoses();
 const bamboo = createBamboo();
 const panda = createPanda(bamboo);
 bamboo.group.add(panda.group); // il panda vive nella foresta di bambù
+const xiao = createXiao({ camera, dom: renderer.domElement });
 const objects = {
   'Girasoli': createSunflowers(),
   'Campo di margherite': daisies.group,
   'Campo di rose rosse': roses.group,
   'Foresta di bambù': bamboo.group,
   'Orsetto peluche': createTeddy(),
+  'XIAO ESP32-C3': xiao.group,
 };
 for (const obj of Object.values(objects)) {
   obj.visible = false;
@@ -192,6 +195,8 @@ const bindings = [
   { key: 'tagliaerbaGuida', get: () => mower.params.guida, set: (v) => { if (v === 'Automatica' || v === 'Frecce') mower.params.guida = v; } },
   { key: 'tagliaerbaVel', get: () => mower.params.velocita, set: (v) => { mower.params.velocita = v; } },
   { key: 'ricrescita', get: () => mower.params.ricrescita, set: (v) => { mower.params.ricrescita = v; } },
+  { key: 'xiaoEsploso', get: () => xiao.params.esploso, set: (v) => { xiao.params.esploso = v; } },
+  { key: 'xiaoRot', get: () => xiao.params.rotazione, set: (v) => { xiao.params.rotazione = v; } },
   { key: 'bambu', get: () => bamboo.params.densita, set: (v) => { bamboo.params.densita = v; bamboo.rebuild(); } },
   { key: 'panda', get: () => panda.params.attivo, set: (v) => { panda.params.attivo = v; } },
   { key: 'pandaVel', get: () => panda.params.velocita, set: (v) => { panda.params.velocita = v; } },
@@ -200,10 +205,10 @@ const share = createShare(bindings);
 share.applyFromURL(); // prima della GUI, che così nasce già allineata
 
 // UI
-createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, mower, bamboo, panda, share });
+createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, mower, bamboo, panda, xiao, share });
 
 if (import.meta.env.DEV) {
-  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monsters, mower, bamboo, panda, share, state };
+  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monsters, mower, bamboo, panda, xiao, share, state };
 }
 
 // resize
@@ -229,6 +234,7 @@ renderer.setAnimationLoop(() => {
   roses.update(wind, time, mower.params.ricrescita);
   bamboo.update(wind, dt);
   if (bamboo.group.visible) panda.update(time, dt);
+  xiao.update(time, dt);
   monsters.update(time, dt);
   if (state.vista === 'Occhi di insetto') {
     updateInsectView(dt);

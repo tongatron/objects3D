@@ -238,8 +238,13 @@ export function createMonsters(scene) {
     }
   }
 
-  // il primo mostriciattolo, come prima: fucsia e peloso
+  // sei mostriciattoli di default, colori e fatture diverse
   add('#d6218c', 'Peloso');
+  add('#3aa0ff', 'Ispido');
+  add('#f6c445', 'Riccio');
+  add('#5be36b', 'Raso');
+  add('#ff6b35', 'Ispido');
+  add('#a05bff', 'Peloso');
 
   return { group, params, list, add, removeLast, serialize, deserialize, update };
 }

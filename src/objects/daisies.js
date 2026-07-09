@@ -9,6 +9,13 @@ import * as THREE from 'three';
 const PETALS_PER_FLOWER = 20;
 const FIELD_RADIUS = 5.5;
 const MAX_FLOWERS = 300;
+const BLOOM_DURATION = 0.7; // secondi per risbocciare dopo il taglio
+
+// sbocciatura "pop": easing con overshoot (easeOutBack)
+function bloomEase(k) {
+  const p = k - 1;
+  return 1 + 2.70158 * p * p * p + 1.70158 * p * p;
+}
 
 function petalGeometry() {
   // petalo bianco a lingua, punta arrotondata, leggera conca
@@ -80,7 +87,6 @@ export function createDaisies() {
   const headQ = new THREE.Quaternion();
   const axis = new THREE.Vector3();
   const top = new THREE.Vector3();
-  const one = new THREE.Vector3(1, 1, 1);
   const scl = new THREE.Vector3();
 
   function rebuild() {
@@ -126,7 +132,7 @@ export function createDaisies() {
         rings.push(dummy.matrix.clone());
       }
 
-      flowers.push({ x, z, h, tiltQ, rings, centerScale: 0.85 + Math.random() * 0.35 });
+      flowers.push({ x, z, h, tiltQ, rings, centerScale: 0.85 + Math.random() * 0.35, grow: 1, cutTime: -1 });
 
       // due foglie alla base (statiche)
       for (let l = 0; l < 2; l++) {
@@ -158,23 +164,25 @@ export function createDaisies() {
         flowerQ.copy(f.tiltQ);
       }
 
+      const g = f.grow; // 0 = falciata, 1 = intera (con overshoot in sbocciatura)
       dummy.position.set(f.x, 0, f.z);
       dummy.quaternion.copy(flowerQ);
-      dummy.scale.set(1, f.h, 1);
+      dummy.scale.set(g, f.h * g, g);
       dummy.updateMatrix();
       stems.setMatrixAt(i, dummy.matrix);
 
-      top.set(0, f.h, 0).applyQuaternion(flowerQ);
+      top.set(0, f.h * g, 0).applyQuaternion(flowerQ);
       top.x += f.x;
       top.z += f.z;
 
       headQ.copy(flowerQ).multiply(faceUp);
 
-      scl.setScalar(f.centerScale);
+      scl.setScalar(f.centerScale * g);
       headM.compose(top, headQ, scl);
       centers.setMatrixAt(i, headM);
 
-      headM.compose(top, headQ, one);
+      scl.setScalar(g);
+      headM.compose(top, headQ, scl);
       for (const ring of f.rings) {
         petalM.multiplyMatrices(headM, ring);
         petals.setMatrixAt(petalIdx++, petalM);
@@ -185,12 +193,33 @@ export function createDaisies() {
     petals.instanceMatrix.needsUpdate = true;
   }
 
-  function update(wind) {
+  // falcia i fiori nel cerchio: spariscono e memorizzano l'istante del taglio
+  function cutCircle(x, z, r, time) {
+    const r2 = r * r;
+    for (const f of flowers) {
+      const dx = f.x - x;
+      const dz = f.z - z;
+      if (dx * dx + dz * dz <= r2) {
+        f.grow = 0;
+        f.cutTime = time;
+      }
+    }
+  }
+
+  function update(wind, time = 0, regrowDelay = 4) {
     if (!group.visible) return;
+    for (const f of flowers) {
+      if (f.cutTime < 0) continue;
+      const t = time - f.cutTime - regrowDelay;
+      if (t <= 0) { f.grow = 0; continue; }
+      const k = Math.min(1, t / BLOOM_DURATION);
+      f.grow = bloomEase(k);
+      if (k >= 1) { f.grow = 1; f.cutTime = -1; }
+    }
     pose(wind);
   }
 
   rebuild();
 
-  return { group, params, rebuild, update };
+  return { group, params, rebuild, update, cutCircle };
 }

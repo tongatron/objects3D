@@ -2,7 +2,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { FLOOR_PRESETS } from './floors.js';
 import { MONSTER_STYLES } from './monster.js';
 
-export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, bamboo, panda, share }) {
+export function createUI({ state, setObject, setFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, mower, bamboo, panda, share }) {
   const gui = new GUI({ title: 'Impostazioni' });
 
   // --- condivisione ---
@@ -100,6 +100,13 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
       addCtrl.name(`Aggiungi (${monsters.list.length} in campo)`);
     },
   }, 'rimuovi').name('Rimuovi ultimo');
+
+  // --- mostro tagliaerba ---
+  const mowerFolder = gui.addFolder('Mostro tagliaerba');
+  mowerFolder.add(mower.params, 'attivo').name('Attivo');
+  mowerFolder.add(mower.params, 'guida', ['Automatica', 'Frecce']).name('Guida (Frecce = tastiera ⬆⬇⬅➡)');
+  mowerFolder.add(mower.params, 'velocita', 0.4, 3, 0.05).name('Velocità');
+  mowerFolder.add(mower.params, 'ricrescita', 1, 15, 0.5).name('Ricrescita (s)');
 
   // --- insetti ---
   const insectFolder = gui.addFolder('Insetti (falene)');

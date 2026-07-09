@@ -8,6 +8,13 @@ import * as THREE from 'three';
 
 const FIELD_RADIUS = 5.5;
 const MAX_FLOWERS = 300;
+const BLOOM_DURATION = 0.7; // secondi per risbocciare dopo il taglio
+
+// sbocciatura "pop": easing con overshoot (easeOutBack)
+function bloomEase(k) {
+  const p = k - 1;
+  return 1 + 2.70158 * p * p * p + 1.70158 * p * p;
+}
 
 // [numero petali, apertura dal verticale (rad), raggio base, scala]
 const WHORLS = [
@@ -113,7 +120,6 @@ export function createRoses() {
   const headQ = new THREE.Quaternion();
   const axis = new THREE.Vector3();
   const top = new THREE.Vector3();
-  const one = new THREE.Vector3(1, 1, 1);
   const scl = new THREE.Vector3();
 
   // matrice locale di un petalo/sepalo nel frame del capolino (Z = asse fiore)
@@ -173,7 +179,7 @@ export function createRoses() {
         sepalRings.push(ringMatrix(ang, 1.45, 0.012 * headScale, headScale, -0.004));
       }
 
-      flowers.push({ x, z, h, tiltQ, rings, sepalRings, headScale });
+      flowers.push({ x, z, h, tiltQ, rings, sepalRings, headScale, grow: 1, cutTime: -1 });
 
       // tre foglioline basse sullo stelo (statiche)
       for (let l = 0; l < 3; l++) {
@@ -205,25 +211,27 @@ export function createRoses() {
         flowerQ.copy(f.tiltQ);
       }
 
+      const g = f.grow; // 0 = falciata, 1 = intera (con overshoot in sbocciatura)
       dummy.position.set(f.x, 0, f.z);
       dummy.quaternion.copy(flowerQ);
-      dummy.scale.set(1, f.h, 1);
+      dummy.scale.set(g, f.h * g, g);
       dummy.updateMatrix();
       stems.setMatrixAt(i, dummy.matrix);
 
-      top.set(0, f.h, 0).applyQuaternion(flowerQ);
+      top.set(0, f.h * g, 0).applyQuaternion(flowerQ);
       top.x += f.x;
       top.z += f.z;
 
       headQ.copy(flowerQ).multiply(faceUp);
 
-      scl.setScalar(f.headScale);
+      scl.setScalar(f.headScale * g);
       headM.compose(top, headQ, scl);
       // bocciolo al centro della corolla
       partM.copy(headM);
       buds.setMatrixAt(i, partM);
 
-      headM.compose(top, headQ, one);
+      scl.setScalar(g);
+      headM.compose(top, headQ, scl);
       for (const ring of f.rings) {
         partM.multiplyMatrices(headM, ring);
         petals.setMatrixAt(petalIdx++, partM);
@@ -239,12 +247,33 @@ export function createRoses() {
     sepals.instanceMatrix.needsUpdate = true;
   }
 
-  function update(wind) {
+  // falcia i fiori nel cerchio: spariscono e memorizzano l'istante del taglio
+  function cutCircle(x, z, r, time) {
+    const r2 = r * r;
+    for (const f of flowers) {
+      const dx = f.x - x;
+      const dz = f.z - z;
+      if (dx * dx + dz * dz <= r2) {
+        f.grow = 0;
+        f.cutTime = time;
+      }
+    }
+  }
+
+  function update(wind, time = 0, regrowDelay = 4) {
     if (!group.visible) return;
+    for (const f of flowers) {
+      if (f.cutTime < 0) continue;
+      const t = time - f.cutTime - regrowDelay;
+      if (t <= 0) { f.grow = 0; continue; }
+      const k = Math.min(1, t / BLOOM_DURATION);
+      f.grow = bloomEase(k);
+      if (k >= 1) { f.grow = 1; f.cutTime = -1; }
+    }
     pose(wind);
   }
 
   rebuild();
 
-  return { group, params, rebuild, update };
+  return { group, params, rebuild, update, cutCircle };
 }

@@ -18,6 +18,7 @@ import { createBulb } from './lights/bulb.js';
 import { createInsects } from './insects.js';
 import { createWind } from './wind.js';
 import { createMonsters } from './monster.js';
+import { createMower } from './mower.js';
 import { createShare } from './share.js';
 import { createGrass } from './grass.js';
 import { createUI } from './ui.js';
@@ -94,6 +95,9 @@ insects.bindLights({ neon, bulb });
 
 // mostriciattoli che corrono nel campo (opzionali, anche più d'uno)
 const monsters = createMonsters(scene);
+
+// mostro tagliaerba (opzionale): rasa erba e fiori, che poi ricrescono
+const mower = createMower(scene, { grass, daisies, roses });
 
 // post-processing: mosaico "occhio composto" attivo solo in vista insetto
 const composer = new EffectComposer(renderer);
@@ -184,6 +188,10 @@ const bindings = [
   { key: 'mostroVel', get: () => monsters.params.velocita, set: (v) => { monsters.params.velocita = v; } },
   { key: 'mostroDir', get: () => monsters.params.cambiDirezione, set: (v) => { monsters.params.cambiDirezione = v; } },
   { key: 'mostri', get: () => monsters.serialize(), set: (v) => { monsters.deserialize(v); } },
+  { key: 'tagliaerba', get: () => mower.params.attivo, set: (v) => { mower.params.attivo = v; } },
+  { key: 'tagliaerbaGuida', get: () => mower.params.guida, set: (v) => { if (v === 'Automatica' || v === 'Frecce') mower.params.guida = v; } },
+  { key: 'tagliaerbaVel', get: () => mower.params.velocita, set: (v) => { mower.params.velocita = v; } },
+  { key: 'ricrescita', get: () => mower.params.ricrescita, set: (v) => { mower.params.ricrescita = v; } },
   { key: 'bambu', get: () => bamboo.params.densita, set: (v) => { bamboo.params.densita = v; bamboo.rebuild(); } },
   { key: 'panda', get: () => panda.params.attivo, set: (v) => { panda.params.attivo = v; } },
   { key: 'pandaVel', get: () => panda.params.velocita, set: (v) => { panda.params.velocita = v; } },
@@ -192,10 +200,10 @@ const share = createShare(bindings);
 share.applyFromURL(); // prima della GUI, che così nasce già allineata
 
 // UI
-createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, bamboo, panda, share });
+createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, mower, bamboo, panda, share });
 
 if (import.meta.env.DEV) {
-  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monsters, bamboo, panda, share, state };
+  window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monsters, mower, bamboo, panda, share, state };
 }
 
 // resize
@@ -215,8 +223,10 @@ renderer.setAnimationLoop(() => {
   neon.update(time, dt);
   insects.update(time, dt);
   wind.update(dt);
-  daisies.update(wind);
-  roses.update(wind);
+  mower.update(time, dt); // prima dei campi, così il taglio vale già in questo frame
+  grass.update(time, mower.params.ricrescita);
+  daisies.update(wind, time, mower.params.ricrescita);
+  roses.update(wind, time, mower.params.ricrescita);
   bamboo.update(wind, dt);
   if (bamboo.group.visible) panda.update(time, dt);
   monsters.update(time, dt);

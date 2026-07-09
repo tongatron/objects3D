@@ -184,10 +184,10 @@ function buildMower() {
 
 export function createMower(scene, fields) {
   const params = {
-    attivo: false,
+    attivo: true,
     guida: 'Automatica', // oppure 'Frecce' (tastiera)
-    velocita: 1.4,
-    ricrescita: 4, // secondi prima che erba e fiori ricrescano
+    velocita: 1.95,
+    ricrescita: 7.5, // secondi prima che erba e fiori ricrescano
   };
 
   const group = new THREE.Group();

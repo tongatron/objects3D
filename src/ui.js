@@ -15,7 +15,7 @@ export function createUI({ state, setObject, setFloor, neon, ambient, bulb, inse
   }, 'copia').name('Copia link impostazioni');
 
   // --- scena ---
-  gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Campo di rose rosse', 'Foresta di bambù', 'Orsetto peluche', 'XIAO ESP32-C3'])
+  gui.add(state, 'oggetto', ['Girasoli', 'Campo di margherite', 'Campo di rose rosse', 'Foresta di bambù', 'Orsetto peluche', 'Crocifisso', 'XIAO ESP32-C3'])
     .name('Oggetto')
     .onChange(setObject);
 

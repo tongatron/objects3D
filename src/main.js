@@ -12,6 +12,7 @@ import { createRoses } from './objects/roses.js';
 import { createTeddy } from './objects/teddy.js';
 import { createXiao } from './objects/xiao.js';
 import { createBamboo } from './objects/bamboo.js';
+import { createCrucifix } from './objects/crucifix.js';
 import { createPanda } from './panda.js';
 import { createNeon } from './lights/neon.js';
 import { createAmbient } from './lights/ambient.js';
@@ -74,6 +75,7 @@ const objects = {
   'Campo di rose rosse': roses.group,
   'Foresta di bambù': bamboo.group,
   'Orsetto peluche': createTeddy(),
+  'Crocifisso': createCrucifix(),
   'XIAO ESP32-C3': xiao.group,
 };
 for (const obj of Object.values(objects)) {
@@ -113,7 +115,7 @@ composer.addPass(new OutputPass());
 
 // stato iniziale
 const state = {
-  oggetto: 'XIAO ESP32-C3',
+  oggetto: 'Girasoli',
   pavimento: 'Terra erbosa',
   vista: 'Orbitale',
 };

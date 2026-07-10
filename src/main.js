@@ -113,7 +113,7 @@ composer.addPass(new OutputPass());
 
 // stato iniziale
 const state = {
-  oggetto: 'Campo di rose rosse',
+  oggetto: 'XIAO ESP32-C3',
   pavimento: 'Terra erbosa',
   vista: 'Orbitale',
 };
@@ -203,6 +203,12 @@ const bindings = [
 ];
 const share = createShare(bindings);
 share.applyFromURL(); // prima della GUI, che così nasce già allineata
+
+// inquadratura d'apertura per la mostra del processore: dall'alto, sul lato componenti
+if (state.oggetto === 'XIAO ESP32-C3' && state.vista === 'Orbitale') {
+  camera.position.set(1.6, 3.9, 4.6);
+  controls.target.set(0, 1.4, 0);
+}
 
 // UI
 createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, mower, bamboo, panda, xiao, share });

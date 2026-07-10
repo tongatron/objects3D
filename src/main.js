@@ -12,7 +12,7 @@ import { createRoses } from './objects/roses.js';
 import { createTeddy } from './objects/teddy.js';
 import { createXiao } from './objects/xiao.js';
 import { createBamboo } from './objects/bamboo.js';
-import { createCrucifix } from './objects/crucifix.js';
+import { createNuraghe } from './objects/nuraghe.js';
 import { createPanda } from './panda.js';
 import { createNeon } from './lights/neon.js';
 import { createAmbient } from './lights/ambient.js';
@@ -69,13 +69,14 @@ const bamboo = createBamboo();
 const panda = createPanda(bamboo);
 bamboo.group.add(panda.group); // il panda vive nella foresta di bambù
 const xiao = createXiao({ camera, dom: renderer.domElement });
+const nuraghe = createNuraghe();
 const objects = {
   'Girasoli': createSunflowers(),
   'Campo di margherite': daisies.group,
   'Campo di rose rosse': roses.group,
   'Foresta di bambù': bamboo.group,
   'Orsetto peluche': createTeddy(),
-  'Crocifisso': createCrucifix(),
+  'Nuraghe sardo': nuraghe.group,
   'XIAO ESP32-C3': xiao.group,
 };
 for (const obj of Object.values(objects)) {
@@ -199,6 +200,8 @@ const bindings = [
   { key: 'ricrescita', get: () => mower.params.ricrescita, set: (v) => { mower.params.ricrescita = v; } },
   { key: 'xiaoEsploso', get: () => xiao.params.esploso, set: (v) => { xiao.params.esploso = v; } },
   { key: 'xiaoRot', get: () => xiao.params.rotazione, set: (v) => { xiao.params.rotazione = v; } },
+  { key: 'popcorn', get: () => nuraghe.params.popcorn, set: (v) => { nuraghe.params.popcorn = v; } },
+  { key: 'popcornInt', get: () => nuraghe.params.intensita, set: (v) => { nuraghe.params.intensita = v; } },
   { key: 'bambu', get: () => bamboo.params.densita, set: (v) => { bamboo.params.densita = v; bamboo.rebuild(); } },
   { key: 'panda', get: () => panda.params.attivo, set: (v) => { panda.params.attivo = v; } },
   { key: 'pandaVel', get: () => panda.params.velocita, set: (v) => { panda.params.velocita = v; } },
@@ -213,7 +216,7 @@ if (state.oggetto === 'XIAO ESP32-C3' && state.vista === 'Orbitale') {
 }
 
 // UI
-createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, mower, bamboo, panda, xiao, share });
+createUI({ state, setObject, setFloor: applyFloor, neon, ambient, bulb, insects, setVista, wind, daisies, roses, grass, monsters, mower, bamboo, panda, xiao, nuraghe, share });
 
 if (import.meta.env.DEV) {
   window.__debug = { insects, neon, bulb, camera, controls, wind, daisies, roses, grass, monsters, mower, bamboo, panda, xiao, share, state };
@@ -243,6 +246,7 @@ renderer.setAnimationLoop(() => {
   bamboo.update(wind, dt);
   if (bamboo.group.visible) panda.update(time, dt);
   xiao.update(time, dt);
+  nuraghe.update(time, dt);
   monsters.update(time, dt);
   if (state.vista === 'Occhi di insetto') {
     updateInsectView(dt);

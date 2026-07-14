@@ -113,10 +113,21 @@ composer.addPass(new OutputPass());
 
 // stato iniziale
 const state = {
-  oggetto: 'Girasoli',
+  oggetto: 'Campo di rose rosse',
   pavimento: 'Terra erbosa',
   vista: 'Orbitale',
 };
+
+// scena di apertura predefinita: rose rosse illuminate dalla lampadina, vento
+// leggero, foresta di bambù rada senza panda. Impostata come default così che
+// createShare la catturi come stato base e i link condivisi restino corti.
+ambient.params.intensita = 0.52; ambient.apply();
+bulb.params.intensita = 40; bulb.params.altezza = 1.6; bulb.apply();
+wind.params.intensita = 1.7;
+monsters.params.velocita = 2.2;
+bamboo.params.densita = 10; bamboo.rebuild();
+panda.params.attivo = false;
+
 setObject(state.oggetto);
 applyFloor(state.pavimento);
 

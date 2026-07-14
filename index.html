@@ -27,11 +27,29 @@
       html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; background: #000; }
       #app { width: 100%; height: 100%; }
       canvas { display: block; }
+      #hint-banner {
+        position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+        z-index: 10; display: flex; align-items: center; gap: 12px;
+        max-width: calc(100% - 24px); box-sizing: border-box;
+        padding: 10px 14px; border-radius: 10px;
+        background: rgba(245, 245, 240, 0.95); color: #1a1a1a;
+        font-family: system-ui, -apple-system, sans-serif; font-size: 14px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+      }
+      #hint-banner button {
+        border: none; background: transparent; color: #1a1a1a;
+        font-size: 18px; line-height: 1; cursor: pointer; padding: 0 2px;
+      }
+      #hint-banner button:hover { color: #000; }
     </style>
     <script defer src="https://analytics.tongatron.org/script.js" data-website-id="4f90383b-ca5c-403e-93d9-e8ce221a10e3"></script>
 </head>
   <body>
     <div id="app"></div>
+    <div id="hint-banner">
+      <span>usa il mouse per muoverti nella vista 3d</span>
+      <button type="button" aria-label="Chiudi" onclick="this.parentElement.remove()">&times;</button>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
